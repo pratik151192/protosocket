@@ -433,8 +433,8 @@ where
     fn writev_buffers(&mut self) -> std::result::Result<bool, std::io::Error> {
         /// I need to figure out how to get this from the os rather than hardcoding. 16 is the lowest I've seen mention of,
         /// and I've seen 1024 more commonly.
-        const UIO_MAXIOV: usize = 128;
-
+        const UIO_MAXIOV: usize = 1024;
+        
         let buffers: Vec<IoSlice> = self
             .send_buffer
             .iter()
@@ -448,6 +448,7 @@ where
             }
             Ok(written) => {
                 self.rotate_send_buffers(written);
+                log::debug!("Buffers written: {}", written);
             }
             // Would block "errors" are the OS's way of saying that the
             // connection is not actually ready to perform this I/O operation.
